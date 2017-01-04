@@ -14,7 +14,7 @@
 
 cap pr drop pt_compile_mata
 program pt_compile_mata
-	syntax, PACKage(string) VERSion(string) VERBOSE FORCE
+	syntax, PACKage(string) VERSion(string) [FUNctions(string)] [VERBOSE] [FORCE]
 	loc force = ("`force'" != "")
 
 	if (!`force') {
@@ -23,14 +23,14 @@ program pt_compile_mata
 	}
 
 	if (`force') {
-		Compile, package(`package') version(`version') `verbose'
+		Compile, package(`package') version(`version') functions(`functions') `verbose' 
 	}
 end
 
 
 cap pr drop Check
-progrma Check, sclass
-	syntax, PACKage(string) VERSion(string) VERBOSE
+program Check, sclass
+	syntax, PACKage(string) VERSion(string) [VERBOSE]
 	loc verbose = ("`verbose'" != "")
 
 	loc package_version = "`version'"
@@ -64,8 +64,11 @@ end
 
 cap pr drop Compile
 program Compile
-	syntax, PACKage(string) VERSion(string) VERBOSE
+	syntax, PACKage(string) VERSion(string) [FUNctions(string)] [VERBOSE]
 	loc verbose = ("`verbose'" != "")
+	if ("`functions'"=="") loc functions "*()"
+
+	loc stata_version = c(stata_version)
 
 	clear mata
 	
@@ -83,21 +86,22 @@ program Compile
 	loc fn "`r(fn)'"
 	run "`fn'"
 
-	mata: mata desc // remove
-	//mata: mata drop HDFE() // WHY DO I NEED TO DO THIS? IS IT A BUG IN MATA?
-	//mata: mata drop hdfe() // WHY DO I NEED TO DO THIS? IS IT A BUG IN MATA?
+	// Remove this ?
+	if (`verbose') di as error "Functions available for indexing:"
+	if (`verbose') mata: mata desc
+
 
 	* Find out where can I save the .mlib
 	loc path = c(sysdir_plus)
 	loc random_file = "`=int(runiform()*1e8)'"
-	cap conf new file "`path'" + "`random_file'"
+	cap conf new file "`path'`random_file'"
 	if (c(rc)) {
 		di as error `"cannot save compiled Mata file in sysdir_plus (`path'); saving in ".""'
 		loc path "."
 	}
 	else {
 		loc path = "`path'l"
-		cap conf new file "`path'" + "`random_file'"
+		cap conf new file "`path'`random_file'"
 		if (c(rc)) {
 			mkdir "`path'"
 		}
@@ -105,7 +109,7 @@ program Compile
 
 	* Create .mlib
 	qui mata: mata mlib create l`package'  , dir("`path'") replace
-	qui mata: mata mlib add l`package' *() , dir("`path'") complete
+	qui mata: mata mlib add l`package' `functions', dir("`path'") complete
 	//qui mata: mata mlib add l`package' HDFE() , dir("`path'") complete
 	
 	* Verify file exists and works correctly
@@ -113,5 +117,8 @@ program Compile
 	loc fn `r(fn)'
 	if (`verbose') di as text `"(library saved in `fn')"'
 	qui mata: mata mlib index
-	if (`verbose') mata: mata describe using `package'
+
+	// Remove this?
+	if (`verbose') di as error "Functions indexed:"
+	if (`verbose') mata: mata describe using l`package'
 end
