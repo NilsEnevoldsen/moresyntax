@@ -4,4 +4,5 @@ d parsetools
 d
 
 f pt_compile_mata.ado
+f pt_get_version.ado
 

@@ -2,14 +2,22 @@
 
 * USAGE:
 
-* (1) in <mypack.mata>:
-*    	mata: string scalar mypack_version() return("1.2.3 31dec2017")
-*    	mata: string scalar mypack_stata_version() return("`c(stata_version)'")
+* (1) in <MYPACKAGE.mata>:
+*		pt_get_version MYADO // stores local `package_version' from the first line of MYADO.ado
+*		assert("`package_version'" != "")
+*	    mata: string scalar MYPACKAGE_version() return("`package_version'")
+*	    mata: string scalar MYPACKAGE_stata_version() return("`c(stata_version)'")
 
-* (2) in <mypack.ado>
-*		pt_compile_mata, package(mypack) version(1.2.3 31dec2017)
+* (2) In the first line of <MYADO.ado>
+*		*! version 1.2.3 31dec2017 abc
 
-* This is based on code from David Roodman's -boottest-
+* (3) afterwards in <MYADO.ado>
+*		pt_get_version MYADO
+*		pt_compile_mata, package(MYPACKAGE) version(`package_version')
+
+* Note: MYADO can be the same as MYPACKAGE
+* Note: pt_compile_mata accepts more options: functions(...) verbose force
+* Acknowledgment: his is based on code from David Roodman's -boottest-
 
 
 cap pr drop pt_compile_mata
@@ -45,20 +53,22 @@ program Check, sclass
 	cap mata: st_local("mlib_stata_version", `package'_stata_version())
 	_assert inlist(`c(rc)', 0, 3499), msg("`package' check: unexpected error")
 	
-	cap mata: st_local("mlib_package_version", package_version())
+	cap mata: st_local("mlib_package_version", `package'_version())
 	_assert inlist(`c(rc)', 0, 3499), msg("`package' check: unexpected error")
-	
+
 	if ("`mlib_stata_version'" != "`stata_version'") {
 		if (`verbose') di as text "(existing l`package'.mlib compiled with Stata `mlib_stata_version'; need to recompile for Stata `stata_version')"
 		sreturn local needs_compile = 1
 		exit
 	}
 
-	if ("`mlib_package_version'" != "`package_version'")) {
-		if (`verbose') di as text "(existing l`package'.mlib is version `mlib_abcreg_version'; need to recompile for `abcreg_version')"
+	if ("`mlib_package_version'" != "`package_version'") {
+		if (`verbose') di as text `"(existing l`package'.mlib is version "`mlib_package_version'"; need to recompile for "`package_version'")"'
 		sreturn local needs_compile = 1
 		exit
 	}
+	
+	sreturn local needs_compile = 0
 end
 
 
