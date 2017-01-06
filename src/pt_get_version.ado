@@ -18,6 +18,7 @@ mata:
 		}
 		fh = fopen(fn, "r")
 		line = fget(fh)
+		fclose(fh)
 		line = strtrim(line)
 		if (strpos(line, "*! version ")) {
 			line = strtrim(substr(line, 1 + strlen("*! version "), .))
@@ -27,6 +28,5 @@ mata:
 			printf("{err}no version line found for %s\n", ado)
 			return("")
 		}
-		fclose(fh)
 	}
 end

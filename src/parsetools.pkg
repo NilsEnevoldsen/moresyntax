@@ -6,3 +6,8 @@ d
 f pt_compile_mata.ado
 f pt_get_version.ado
 
+f pt_fvunab.ado
+
+f pt_parse_absvars.ado
+f pt_parse_varlist.ado
+f pt_parse_vce.ado

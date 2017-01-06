@@ -22,7 +22,7 @@
 
 cap pr drop pt_compile_mata
 program pt_compile_mata
-	syntax, PACKage(string) VERSion(string) [FUNctions(string)] [VERBOSE] [FORCE]
+	syntax, PACKage(string) VERSion(string) [FUNctions(string)] [VERBOSE] [FORCE] [DEBUG]
 	loc force = ("`force'" != "")
 
 	if (!`force') {
@@ -31,7 +31,7 @@ program pt_compile_mata
 	}
 
 	if (`force') {
-		Compile, package(`package') version(`version') functions(`functions') `verbose' 
+		Compile, package(`package') version(`version') functions(`functions') `verbose' `debug'
 	}
 end
 
@@ -74,13 +74,14 @@ end
 
 cap pr drop Compile
 program Compile
-	syntax, PACKage(string) VERSion(string) [FUNctions(string)] [VERBOSE]
+	syntax, PACKage(string) VERSion(string) [FUNctions(string)] [VERBOSE] [DEBUG]
 	loc verbose = ("`verbose'" != "")
+	loc debug = ("`debug'" != "")
 	if ("`functions'"=="") loc functions "*()"
 
 	loc stata_version = c(stata_version)
 
-	clear mata
+	mata: mata clear
 	
 	* Delete any preexisting .mlib
 	loc mlib "l`package'.mlib"
@@ -97,8 +98,8 @@ program Compile
 	run "`fn'"
 
 	// Remove this ?
-	if (`verbose') di as error "Functions available for indexing:"
-	if (`verbose') mata: mata desc
+	if (`debug') di as error "Functions available for indexing:"
+	if (`debug') mata: mata desc
 
 
 	* Find out where can I save the .mlib
@@ -129,6 +130,6 @@ program Compile
 	qui mata: mata mlib index
 
 	// Remove this?
-	if (`verbose') di as error "Functions indexed:"
-	if (`verbose') mata: mata describe using l`package'
+	if (`debug') di as error "Functions indexed:"
+	if (`debug') mata: mata describe using l`package'
 end
