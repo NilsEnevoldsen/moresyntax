@@ -19,8 +19,6 @@ string matrix clean_tokens(string scalar vars)
 	real scalar i
 	ans = tokens(vars)
 	for (i=1; i<=cols(ans); i++) {
-		//printf("\n<%s>\n", invtokens(tokens(ans[i])))
-		//(strofreal(i), "|", ans[i], "|", invtokens(tokens(ans[i])))'
 		ans[i] = invtokens(tokens(ans[i]))
 	}
 	return(ans)

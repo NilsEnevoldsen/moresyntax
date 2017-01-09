@@ -71,6 +71,7 @@ pr pt_parse_absvars, sclass
 		loc all_has_intercept "`all_has_intercept' `has_intercept'"
 		loc all_ivars `"`all_ivars' "`ivars'""'
 		loc all_cvars `"`all_cvars' "`cvars'""'
+		loc all_absvars `"`all_absvars' "`absvar'""'
 
 		* Store target variables including slopes
 		if ("`target'" != "") {
@@ -109,16 +110,16 @@ pr pt_parse_absvars, sclass
 
 	sreturn clear
 	sreturn loc equation_d "`equation_d'"
+	sreturn loc extended_absvars "`extended'"
+	sreturn loc num_slopes = "`all_num_slopes'"
+	sreturn loc intercepts = "`all_has_intercept'"
+	sreturn loc targets = `"`all_targets'"'
+	sreturn loc cvars = `"`all_cvars'"'
+	sreturn loc ivars = `"`all_ivars'"'
+	sreturn loc absvars = `"`all_absvars'"'
 	sreturn loc save_all_fe = `save_all_fe'
 	sreturn loc save_any_fe = `save_any_fe'
 	sreturn loc has_intercept = `any_has_intercept'
-	sreturn loc extended_absvars "`extended'"
-	sreturn loc num_slopes = "`all_num_slopes'"
-	
-	sreturn loc intercepts = "`all_has_intercept'"
-	sreturn loc targets = `"`all_targets'"'
-	sreturn loc ivars = `"`all_ivars'"'
-	sreturn loc cvars = `"`all_cvars'"'
 	sreturn loc G = `G'
 end
 
