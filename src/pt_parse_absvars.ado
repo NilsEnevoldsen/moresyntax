@@ -1,27 +1,23 @@
 cap pr drop pt_parse_absvars
 pr pt_parse_absvars, sclass
-	sreturn clear
 	syntax anything(id="absvars" name=absvars equalok everything), ///
+		[NOIsily] /// passed to -pt_fvunab-
 		[SAVEfe Generate] // Synonyms
-	loc save_all_fe = ("`savefe'" != "") | ("`generate'" != "")
 
-* (This breaks the rule of not changing the dataset while parsing...)
-* TODO: replace this with a variable, so the deletion happens later
-	if (`save_all_fe') cap drop __hdfe*__*
+	loc save_all_fe = ("`savefe'" != "") | ("`generate'" != "")
 
 * Unabbreviate variables and trim spaces
 	pt_fvunab `absvars', `noisily' target stringok
 	loc absvars `s(varlist)'
 	loc base_absvars `s(basevars)'
 
-* Count the number of absvars and initialize Mata vector
+* Count the number of absvars
 	loc G 0
 	loc absvars_copy `absvars'
 	while ("`absvars_copy'" != "") {
 		loc ++G
 		gettoken absvar absvars_copy : absvars_copy, bind
 	}
-	mata: REGHDFE.fes = reghdfe_fe(`G')
 
 * For each absvar, get the ivars and cvars (slope variables),
 * and whether the absvar has an intercept or is slopes-only
@@ -70,25 +66,23 @@ pr pt_parse_absvars, sclass
 			loc extended `extended' `baselabel'#c.`cvar'
 		}
 
-		* Initialize FE objects
-		loc fe "mata: REGHDFE.fes[`g']"
-		`fe'.order = `g'
-		`fe'.num_slopes = `num_slopes'
-		`fe'.has_intercept = `has_intercept'
-		`fe'.varlabel = "`label'"
-		`fe'.ivars = tokens("`ivars'")
-		`fe'.cvars = tokens("`cvars'")
-		`fe'.idvarname = "__ID`g'__"
-
-		`fe'.levels = .
-		`fe'.is_clustervar = 0
-		`fe'.in_clustervar = 0
-		`fe'.nesting_clustervar = .
+		* Update locals
+		loc all_num_slopes "`all_num_slopes' `num_slopes'"
+		loc all_has_intercept "`all_has_intercept' `has_intercept'"
+		loc all_ivars `"`all_ivars' "`ivars'""'
+		loc all_cvars `"`all_cvars' "`cvars'""'
 
 		* Store target variables including slopes
 		if ("`target'" != "") {
 			loc save_any_fe 1
-			`fe'.target = J(1, `has_intercept', "`target'") , (`num_slopes' > 0 ? J(1, `num_slopes', "`target'_Slope") + strofreal(1..`num_slopes') : J(1, 0, ""))
+
+			loc targetleft
+			loc targetright
+			if (`has_intercept') loc targetleft `target'
+			if (`num_slopes' > 0) {
+				mata: st_local("targetright", invtokens(J(1, `num_slopes', "`target'_Slope") + strofreal(1..`num_slopes')))
+			}
+			loc all_targets `"`all_targets' "`targetleft' `targetright'""'
 
 			* Build the absvar equation; assert that we can create the new vars
 			if (`has_intercept') {
@@ -103,6 +97,7 @@ pr pt_parse_absvars, sclass
 		}
 		else {
 			loc equation_d_is_valid 0
+			loc all_targets `"`all_targets' """'
 		}
 
 	}
@@ -112,12 +107,19 @@ pr pt_parse_absvars, sclass
 	loc equation_d `equation_d' // trim leading whitespace
 	if (!`equation_d_is_valid') loc equation_d // clear it
 
-	sreturn loc N_hdfe = `G'
+	sreturn clear
 	sreturn loc equation_d "`equation_d'"
 	sreturn loc save_all_fe = `save_all_fe'
 	sreturn loc save_any_fe = `save_any_fe'
 	sreturn loc has_intercept = `any_has_intercept'
 	sreturn loc extended_absvars "`extended'"
+	sreturn loc num_slopes = "`all_num_slopes'"
+	
+	sreturn loc intercepts = "`all_has_intercept'"
+	sreturn loc targets = `"`all_targets'"'
+	sreturn loc ivars = `"`all_ivars'"'
+	sreturn loc cvars = `"`all_cvars'"'
+	sreturn loc G = `G'
 end
 
 
