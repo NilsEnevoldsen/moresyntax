@@ -1,5 +1,5 @@
-capture program drop pt_get_version
-program pt_get_version
+capture program drop ms_get_version
+program ms_get_version
 	args ado
 	mata: st_local("package_version", get_version("`ado'"))
 	c_local package_version "`package_version'"

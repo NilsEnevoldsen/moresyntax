@@ -11,7 +11,7 @@ either undocumented (`help undocumented`) or within the `base/_/` folder (e.g. `
 - `ms_get_version`: returns the version indicated in the starbang line of a given ado
 - `ms_compile_mata`: compile the `mlib` file of a package, if required.
 - `ms_fvunab`: Variant of `fvunab` that does not expand "x##y" into "x y x#y". Also does not expand "x#y" into "i.x#i.y"
-- `ms_parse_absvars`: USAGE: `pt_parse_absvars FE1=var1#var2 i.var3 i.var4#(c.var5 c.var6) , savefe`
+- `ms_parse_absvars`: USAGE: `ms_parse_absvars FE1=var1#var2 i.var3 i.var4#(c.var5 c.var6) , savefe`
 - `ms_parse_varlist`: USAGE:
 - `ms_parse_vce`: USAGE:
 - `ms_fvstrip`: See https://github.com/markeschaffer/stata-utilities
