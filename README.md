@@ -1,20 +1,20 @@
+`moresyntax` is a Stata package that provides extra parsing tools, on top of what `syntax`, `gettoken`, etc. provide.
+
+It is used internally by `reghdfe` and `abcreg`.
+
+Before using a program from here, check that what you want is not already in Stata,
+either undocumented (`help undocumented`) or within the `base/_/` folder (e.g. `_parse_initial.ado`, `_prefix_note.ado`).
+
+
 # Components
 
-`pt_get_version`
-: returns the version indicated in the starbang line of a given ado
-`pt_compile_mata`
-: compile the `mlib` file of a package, if required.
-`pt_fvunab`
-: Variant of `fvunab` that does not expand "x##y" into "x y x#y". Also does not expand "x#y" into "i.x#i.y"
-`pt_parse_absvars`
-: USAGE: `pt_parse_absvars FE1=var1#var2 i.var3 i.var4#(c.var5 c.var6) , savefe`
-`pt_parse_varlist`
-: USAGE:
-`pt_parse_vce`
-: USAGE:
-`pt_fvstrip`
-: See https://github.com/markeschaffer/stata-utilities
-
+- `ms_get_version`: returns the version indicated in the starbang line of a given ado
+- `ms_compile_mata`: compile the `mlib` file of a package, if required.
+- `ms_fvunab`: Variant of `fvunab` that does not expand "x##y" into "x y x#y". Also does not expand "x#y" into "i.x#i.y"
+- `ms_parse_absvars`: USAGE: `pt_parse_absvars FE1=var1#var2 i.var3 i.var4#(c.var5 c.var6) , savefe`
+- `ms_parse_varlist`: USAGE:
+- `ms_parse_vce`: USAGE:
+- `ms_fvstrip`: See https://github.com/markeschaffer/stata-utilities
 
 
 # Installation
@@ -26,8 +26,8 @@ TBD
 ## Dev Version
 
 ```
-cap ado uninstall parsetools
-net install parsetools, from(https://github.com/sergiocorreia/parsetools/raw/master/src/)
+cap ado uninstall moresyntax
+net install moresyntax, from(https://github.com/sergiocorreia/moresyntax/raw/master/src/)
 ```
 
 
@@ -36,7 +36,6 @@ net install parsetools, from(https://github.com/sergiocorreia/parsetools/raw/mas
 To install from a git fork, type something like:
 
 ```
-cap ado uninstall parsetools
-net install parsetools, from("C:/git/parsetools/src")
+cap ado uninstall moresyntax
+net install moresyntax, from("C:/git/moresyntax/src")
 ```
-

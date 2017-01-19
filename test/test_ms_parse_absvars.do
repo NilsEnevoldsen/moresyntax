@@ -1,13 +1,13 @@
-// -------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // Test a list of valid absvars
-// -------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 clear all
 cls
 set trace off
 set more off
 
-cap ado uninstall parsetools
-net install parsetools, from("C:/git/parsetools/src")
+cap ado uninstall moresyntax
+net install moresyntax, from("C:/git/moresyntax/src")
 
 sysuse auto, clear
 set more off
@@ -247,14 +247,14 @@ mata: numsl_27 = (0, 0, 0)
 
 
 
-// -------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 
 set trace off
 forval i = 1/30 {
 	local absvar `absvar`i''
 	if ("`absvar'"=="") continue
 	di as input "[`i'] `absvar'"
-	pt_parse_absvars `absvar'
+	ms_parse_absvars `absvar'
 	sreturn list
 
 	local G = `G_`i''

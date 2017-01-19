@@ -1,4 +1,4 @@
-/* PT_FVUNAB
+/* MS_FVUNAB
 
 Description:
 	Variant of -fvunab- that does not expand "x##y" into "x y x#y"
@@ -6,12 +6,12 @@ Description:
 
 Example:
 	sysuse auto
-	pt_fvunab F2.pri   tu##c.L.trun#ibn.foreign (pri	= tu##for#c.pri) weigh
+	ms_fvunab F2.pri   tu##c.L.trun#ibn.foreign (pri	= tu##for#c.pri) weigh
 	di "`s(varlist)'"
 */
 
-cap pr drop pt_fvunab
-pr pt_fvunab, sclass
+cap pr drop ms_fvunab
+pr ms_fvunab, sclass
 	sreturn clear
 	syntax anything(name=remainder equalok) [, NOIsily TARGET STRingok]
 

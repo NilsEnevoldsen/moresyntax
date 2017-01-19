@@ -1,5 +1,5 @@
-cap pr drop pt_parse_vce
-pr pt_parse_vce
+cap pr drop ms_parse_vce
+program ms_parse_vce
 	syntax, model(string) [vce(string) weighttype(string) ivsuite(string)]
 	loc 0 `vce'
 	syntax 	[anything(id="VCE type")] , ///

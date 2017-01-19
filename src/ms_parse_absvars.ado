@@ -1,13 +1,13 @@
-cap pr drop pt_parse_absvars
-pr pt_parse_absvars, sclass
+cap pr drop ms_parse_absvars
+program ms_parse_absvars, sclass
 	syntax anything(id="absvars" name=absvars equalok everything), ///
-		[NOIsily] /// passed to -pt_fvunab-
+		[NOIsily] /// passed to -ms_fvunab-
 		[SAVEfe Generate] // Synonyms
 
 	loc save_all_fe = ("`savefe'" != "") | ("`generate'" != "")
 
 * Unabbreviate variables and trim spaces
-	pt_fvunab `absvars', `noisily' target stringok
+	ms_fvunab `absvars', `noisily' target stringok
 	loc absvars `s(varlist)'
 	loc base_absvars `s(basevars)'
 

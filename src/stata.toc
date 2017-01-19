@@ -1,6 +1,6 @@
 v 3
 d Sergio Correia, Duke University (sergio.correia@gmail.com)
-p parsetools PARSETOOLS - Misc. parsing and syntax commands for Stata
+p moresyntax MORESYNTAX - Misc. parsing and syntax commands for Stata
 
 * l word-to-show path-or-url [description]
 * t: Directories within site:

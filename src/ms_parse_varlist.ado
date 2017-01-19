@@ -1,5 +1,5 @@
-cap pr drop pt_parse_varlist
-pr pt_parse_varlist, sclass
+cap pr drop ms_parse_varlist
+program ms_parse_varlist, sclass
 	sreturn clear
 	syntax anything(id="varlist" name=0 equalok)
 
