@@ -49,12 +49,11 @@ program Check, sclass
 	loc mlib_stata_version = "???"
 	loc mlib_joint_version = "???"
 
-	cap mata: mata drop `package'_stata_version()
 
 	// Jointly check if the package and stata versions are the same
 
+	cap mata: mata drop `package'_stata_version()
 	cap mata: st_local("mlib_joint_version", `package'_joint_version())
-	mata: st_local("mlib_joint_version", `package'_joint_version())
 	_assert inlist(`c(rc)', 0, 3499), msg("`package' check: unexpected error")
 
 	if ("`mlib_joint_version'" == "`joint_version'") {
