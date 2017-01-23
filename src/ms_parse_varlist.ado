@@ -33,6 +33,7 @@ pr ParseDepvar, sclass
 	local depvar `r(varlist)'
 	local n : word count `depvar'
 	_assert (`n'==1), msg("more than one depvar specified: `depvar'")
+	_assert (!strpos("`depvar'", "o.")), msg("the values of depvar are omitted: `depvar'")
 	sreturn local depvar `depvar'
 	sreturn local rest `0'
 
