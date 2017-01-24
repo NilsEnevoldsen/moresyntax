@@ -52,7 +52,7 @@ program Check, sclass
 
 	// Jointly check if the package and stata versions are the same
 
-	cap mata: mata drop `package'_stata_version()
+	cap mata: mata drop `package'_joint_version()
 	cap mata: st_local("mlib_joint_version", `package'_joint_version())
 	_assert inlist(`c(rc)', 0, 3499), msg("`package' check: unexpected error")
 
@@ -75,7 +75,7 @@ program Check, sclass
 
 	 // Was the MLIB compiled with the current version of Stata?
 
-	cap mata: mata drop `package'_joint_version()
+	cap mata: mata drop `package'_stata_version()
 	cap mata: st_local("mlib_package_version", `package'_version())
 	_assert inlist(`c(rc)', 0, 3499), msg("`package' check: unexpected error")
 
