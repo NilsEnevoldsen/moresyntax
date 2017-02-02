@@ -46,7 +46,12 @@ pr ms_fvunab, sclass
 			
 			if ("`stringok'" != "") {
 				cap syntax varlist(numeric fv ts)	
-				if (c(rc)==109) syntax varlist
+				if (c(rc)==109) {
+					syntax varlist
+				}
+				else {
+					syntax varlist(numeric fv ts) // will raise error
+				}
 				loc stringvars `stringvars' `varlist'
 			}
 			else {
