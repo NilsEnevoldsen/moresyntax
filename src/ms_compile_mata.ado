@@ -126,7 +126,7 @@ program Compile
 		loc path "."
 	}
 	else {
-		loc path = "`path'l"
+		loc path = "`path'l/"
 		cap conf new file "`path'`random_file'"
 		if (c(rc)) {
 			mkdir "`path'"
