@@ -61,9 +61,12 @@ program ms_parse_absvars, sclass
 
 		* Construct expanded labels (used by the output tables)
 		* EXAMPLE: i.x##c.(y z) --> i.x i.x#c.y i.x#c.z
-		if (`has_intercept') loc extended `extended' `baselabel'
+		// note: we can't have i. with st_matrixrowstripe
+		loc ebaselabel : subinstr loc ivars " " "#1.", all 
+		loc ebaselabel 1.`ebaselabel' 
+		if (`has_intercept') loc extended `extended' `ebaselabel'
 		foreach cvar of local cvars {
-			loc extended `extended' `baselabel'#c.`cvar'
+			loc extended `extended' `ebaselabel'#c.`cvar'
 		}
 
 		* Update locals
