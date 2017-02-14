@@ -2,7 +2,8 @@ cap pr drop ms_parse_absvars
 program ms_parse_absvars, sclass
 	syntax anything(id="absvars" name=absvars equalok everything), ///
 		[NOIsily] /// passed to -ms_fvunab-
-		[SAVEfe Generate] // Synonyms
+		[SAVEfe Generate] /// Synonyms
+		[*] /// more options, that are returned in s(options)
 
 	loc save_all_fe = ("`savefe'" != "") | ("`generate'" != "")
 
@@ -62,6 +63,7 @@ program ms_parse_absvars, sclass
 		* Construct expanded labels (used by the output tables)
 		* EXAMPLE: i.x##c.(y z) --> i.x i.x#c.y i.x#c.z
 		// note: we can't have i. with st_matrixrowstripe
+		// Hack: 1. ensures an ivar doesn't end up with a c. prefix
 		loc ebaselabel : subinstr loc ivars " " "#1.", all 
 		loc ebaselabel 1.`ebaselabel' 
 		if (`has_intercept') loc extended `extended' `ebaselabel'
@@ -124,6 +126,7 @@ program ms_parse_absvars, sclass
 	sreturn loc save_any_fe = `save_any_fe'
 	sreturn loc has_intercept = `any_has_intercept'
 	sreturn loc G = `G'
+	sreturn loc options = `"`options'"'
 end
 
 
@@ -160,7 +163,7 @@ pr ParseAbsvar
 	* x##c.(z w) 	--->	i.x			z		w 	i.x#c.z		i.x#c.w
 	* x#y##c.z		--->	i.x#i.y 	z			i.x#i.y#c.z
 	* x#y##c.(z w)	--->	i.x#i.y 	z		w	i.x#i.y#c.z	i.x#i.y#c.w
-	syntax varlist(numeric fv)
+	syntax varlist(numeric fv ts)
 
 	* Iterate over every factor of the extended absvar
 	loc has_intercept 0 // 1 if there is a "factor" w/out a "c." part
@@ -177,7 +180,7 @@ pr ParseAbsvar
 	_assert ("`ivars'" != ""), ///
 		msg("no indicator variables in absvar <`0'> (extended to `varlist')")
 	_assert (`: list unique_cvars == cvars'), ///
-		msg("duplicated c. variable in absvar <`0'> (extended to `varlist')")
+		msg("duplicated c. variable in absvar <`0'> unique(`cvars') == <`unique_cvars'>)")
 
 	c_local ivars `ivars'
 	c_local cvars `cvars'
@@ -188,13 +191,38 @@ end
 cap pr drop ParseFactor
 pr ParseFactor
 	loc 0 : subinstr loc 0 "#" " ", all
+	if ("`noisily'"!="") di as result "    ParseFactor: parts=<`0'>"
 	foreach part of loc 0 {
+		if ("`noisily'"!="") di as result "        ParseFactor: part=<`part'>"
 		_assert strpos("`part'", ".")
 		loc first_char = substr("`part'", 1, 1)
-		_assert inlist("`first_char'", "c", "i")
-		gettoken prefix part : part, parse(".")
-		gettoken dot part : part, parse(".")
-		_assert ("`dot'" == ".")
+		_assert inlist("`first_char'", "c", "i") // every part must start with "i" or "c"
+
+
+		if (substr("`part'", 1, 2)=="i." | substr("`part'", 1, 2)=="ib") {
+			* Standard case: i.var or c.var - just remove i. or c.
+			
+			* Sanity check
+			gettoken left part : part, parse(".")
+			gettoken dot part : part, parse(".")
+			_assert ("`dot'" == ".")
+			if ("`noisily'"!="") di as result "                     part=<`part'>"
+		}
+		else {
+			* c.L.var -> received as cL.var
+			_assert ("`first_char'"=="c")
+
+			* try to get "var" from "c.var" and "L2.var" from "cL2.var"
+			if (substr("`part'", 1, 2)=="c.") {
+				loc part = substr("`part'", 3, .)
+			}
+			else {
+				loc part = substr("`part'", 2, .)
+			}
+
+			if ("`noisily'"!="") di as result "                     part=<`part'>"
+		}
+
 		if ("`first_char'" == "c") {
 			loc cvars `cvars' `part'
 		}
