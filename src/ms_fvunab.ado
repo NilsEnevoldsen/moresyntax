@@ -28,7 +28,17 @@ pr ms_fvunab, sclass
 		* gettoken won't place spaces in 0;
 		* but we can see if a space is coming with `next_char'
 		gettoken 0 remainder: remainder, parse(" #.()=")
-		loc next_char = substr("`remainder'", 1, 1)
+
+		// bug in Stata v12 and older
+		// version 12
+		// loc x = substr(" ", 1, 1)
+		// assert "`x'"==" "
+
+		// bugged code in v12:
+		// loc next_char = substr("`remainder'", 1, 1)
+
+		// workaround:
+		loc next_char `"`=substr("`remainder'", 1, 1)'"'
 		
 		* Match common delimiters
 		loc delim1 = inlist("`0'", "#", ".", "(", ")", "=")
