@@ -1,5 +1,7 @@
 cap pr drop ms_parse_absvars
 program ms_parse_absvars, sclass
+ 	version 13 // "ms_fvunab turn trunk" returns "turntrunk" on v12 and earlier
+ 	
 	syntax anything(id="absvars" name=absvars equalok everything), ///
 		[NOIsily] /// passed to -ms_fvunab-
 		[SAVEfe Generate] /// Synonyms
