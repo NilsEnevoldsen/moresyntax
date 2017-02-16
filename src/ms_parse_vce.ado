@@ -2,11 +2,10 @@ program ms_parse_vce, sclass
 	sreturn clear
 	syntax, [vce(string) weighttype(string)]
 	loc 0 `vce'
-
 	* need -anything- instead of -namelist- because clusters can be x#y
 	syntax 	[anything(id="VCE type")] , [*]
 
-	gettoken vcetype clustervars : namelist
+	gettoken vcetype clustervars : anything
 
 	* Expand variable abbreviations
 	if ("`clustervars'" != "") {
@@ -28,10 +27,10 @@ program ms_parse_vce, sclass
 	if ("`vcetype'"=="") loc vcetype unadjusted
 
 	* Sanity checks on vcetype
-	_assert inlist("`vcetype'", "unadjusted", "robust", "cluster"),
+	_assert inlist("`vcetype'", "unadjusted", "robust", "cluster"), ///
 		msg("vcetype '`vcetype'' not allowed")
 
-	_assert !("`vcetype'"=="unadjusted" & "`weighttype'"=="pweight"),
+	_assert !("`vcetype'"=="unadjusted" & "`weighttype'"=="pweight"), ///
 		msg("pweights do not work with vce(unadjusted), use a different vce()")
 	* Recall that [pw] = [aw] + _robust
 	* http://www.stata.com/statalist/archive/2007-04/msg00282.html
@@ -42,10 +41,9 @@ program ms_parse_vce, sclass
 
 	* Cluster vars
 	loc num_clusters : word count `clustervars'
-	_assert inlist( (`num_clusters'>0) + ("`vcetype'"=="cluster") , 0 , 2),
-		msg("Can't specify cluster without clustervars (and viceversa)") // XOR
+	_assert inlist( (`num_clusters'>0) + ("`vcetype'"=="cluster") , 0 , 2), msg("Can't specify cluster without clustervars (and viceversa)") // XOR
 
-	assert "`options'" == "", msg("VCE options not supported: `options'")
+	_assert "`options'" == "", msg("VCE options not supported: `options'")
 
 	sreturn loc vcetype `vcetype'
 	sreturn loc num_clusters `num_clusters'
