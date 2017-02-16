@@ -23,6 +23,10 @@ mata:
 			line = strtrim(substr(line, 1 + strlen("*! version "), .))
 			return(line)
 		}
+		if (strpos(line, sprintf("*! %s ", ado) )) {
+			line = strtrim(substr(line, 1 + strlen(sprintf("*! %s ", ado) ), .))
+			return(line)
+		}
 		else {
 			printf("{err}no version line found for %s\n", ado)
 			return("")

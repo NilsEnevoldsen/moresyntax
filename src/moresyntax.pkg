@@ -16,6 +16,9 @@ d
 d Additional content:
 d  - ms_fvstrip - Stata utility for removing b/n/o operators in factor variables
 d    Author: Mark E Schaffer, Heriot-Watt University, m.e.schaffer@hw.ac.uk
+d
+d Distribution-Date: 20170216
+d
 
 f ms_compile_mata.ado
 f ms_get_version.ado

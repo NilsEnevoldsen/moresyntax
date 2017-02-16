@@ -1,28 +1,54 @@
-* Check if we need to recompile the library for a certain package
+/*
+MS_COMPILE_MATA: Compile a Mata library (.mlib), if needed
 
-* USAGE:
+USAGE:
 
-* (1) in <MYPACKAGE.mata>:
-*		ms_get_version MYADO // stores local `package_version' from the first line of MYADO.ado
-*		assert("`package_version'" != "")
-*	    mata: string scalar MYPACKAGE_version() return("`package_version'")
-*	    mata: string scalar MYPACKAGE_stata_version() return("`c(stata_version)'")
+1) In xyz.ado:
 
-* (2) In the first line of <MYADO.ado>
-*		*! version 1.2.3 31dec2017 abc
+	-------------------------------------------------------------------------
+	*! version 1.2.3 31dec2017
 
-* (3) afterwards in <MYADO.ado>
-*		ms_get_version MYADO
-*		ms_compile_mata, package(MYPACKAGE) version(`package_version')
-
-* Note: MYADO can be the same as MYPACKAGE
-* Note: ms_compile_mata accepts more options: functions(...) verbose force
-* Acknowledgment: his is based on code from David Roodman's -boottest-
+	program xyz
+		...
+		ms_get_version xyz
+		ms_compile_mata, package(xyz) version(`package_version')
+		...
+	end
+	-------------------------------------------------------------------------
 
 
-cap pr drop ms_compile_mata
+2) In xyz.mata:
+
+	-------------------------------------------------------------------------
+	ms_get_version xyz // stores version of the ado in local `package_version'
+	assert("`package_version'" != "")
+	mata: string scalar xyz_version() return("`package_version'")
+	mata: string scalar xyz_stata_version() return("`c(stata_version)'")
+	...
+	-------------------------------------------------------------------------
+
+ADVANCED SYNTAX:
+
+	ms_compile_mata, PACKage(...) VERsion(...) [FUNctions(...) VERBOSE FORCE DEBUG]
+
+		functions:	list of Mata functions from xyz.mata that will be added
+					to the .mlib. Default is all functions: *()
+
+		force:		always compile the package and create a new .mlib
+					By default, this only happens if the mlib doesn't exist
+					or if the package versions and Stata versions disagree
+					with what the .mlib has stored
+
+
+NOTE:	the names of the .mata and .ado files can be different
+		(in fact, ms_compile_mata doesn't know the name of the .ado!)
+
+ACKNOWLEDGEMENT: based on code from David Roodman's -boottest-
+
+*/
+
 program ms_compile_mata
-	syntax, PACKage(string) VERSion(string) [FUNctions(string)] [VERBOSE] [FORCE] [DEBUG]
+	syntax, PACKage(string) VERsion(string) [FUNctions(string)] [VERBOSE] [FORCE] [DEBUG]
 	loc force = ("`force'" != "")
 
 	if (!`force') {
@@ -36,7 +62,6 @@ program ms_compile_mata
 end
 
 
-cap pr drop Check
 program Check, sclass
 	syntax, PACKage(string) VERSion(string) [VERBOSE]
 	loc verbose = ("`verbose'" != "")
@@ -50,7 +75,7 @@ program Check, sclass
 	loc mlib_joint_version = "???"
 
 
-	// Jointly check if the package and stata versions are the same
+	// Jointly check if the package and Stata versions are the same
 
 	cap mata: mata drop `package'_joint_version()
 	cap mata: st_local("mlib_joint_version", `package'_joint_version())
@@ -87,7 +112,6 @@ program Check, sclass
 end
 
 
-cap pr drop Compile
 program Compile
 	syntax, PACKage(string) VERSion(string) [FUNctions(string)] [VERBOSE] [DEBUG]
 	loc verbose = ("`verbose'" != "")
@@ -106,16 +130,14 @@ program Compile
 	        cap findfile "`mlib'"
 	}
 
-	* Run .mata
+	* Run the .mata
 	if (`verbose') di as text "(compiling l`package'.mlib for Stata `stata_version')"
 	qui findfile "`package'.mata"
 	loc fn "`r(fn)'"
 	run "`fn'"
 
-	// Remove this ?
 	if (`debug') di as error "Functions available for indexing:"
 	if (`debug') mata: mata desc
-
 
 	* Find out where can I save the .mlib
 	loc path = c(sysdir_plus)
@@ -144,7 +166,6 @@ program Compile
 	if (`verbose') di as text `"(library saved in `fn')"'
 	qui mata: mata mlib index
 
-	// Remove this?
 	if (`debug') di as error "Functions indexed:"
 	if (`debug') mata: mata describe using l`package'
 end
