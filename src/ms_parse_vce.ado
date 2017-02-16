@@ -1,4 +1,3 @@
-cap pr drop ms_parse_vce
 program ms_parse_vce, sclass
 * Note: this needs to be rewritten, to make it more general/robust (less tied to reghdfe)
 

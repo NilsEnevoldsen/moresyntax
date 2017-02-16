@@ -1,4 +1,3 @@
-cap pr drop ms_parse_absvars
 program ms_parse_absvars, sclass
 	syntax anything(id="absvars" name=absvars equalok everything), ///
 		[NOIsily] /// passed to -ms_fvunab-

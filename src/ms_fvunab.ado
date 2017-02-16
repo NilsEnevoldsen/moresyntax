@@ -10,8 +10,7 @@ Example:
 	di "`s(varlist)'"
 */
 
-cap pr drop ms_fvunab
-pr ms_fvunab, sclass
+program ms_fvunab, sclass
 	sreturn clear
 	syntax anything(name=remainder equalok) [, NOIsily TARGET STRingok]
 
