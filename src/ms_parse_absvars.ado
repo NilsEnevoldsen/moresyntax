@@ -85,7 +85,7 @@ program ms_parse_absvars, sclass
 			loc targetright
 			if (`has_intercept') loc targetleft `target'
 			if (`num_slopes' > 0) {
-				mata: st_local("targetright", invtokens(J(1, `num_slopes', "`target'_Slope") + strofreal(1..`num_slopes')))
+				mata: st_local("targetright", invtokens(J(1, `num_slopes', "`target'Slope") + strofreal(1..`num_slopes')))
 			}
 			loc all_targets `"`all_targets' "`targetleft' `targetright'""'
 
@@ -95,9 +95,9 @@ program ms_parse_absvars, sclass
 				conf new var `target'
 			}
 			forval h = 1/`num_slopes' {
-				conf new var `target'_Slope`h'
+				conf new var `target'Slope`h'
 				loc cvar : word `h' of `cvars'
-				loc equation_d `equation_d' + `target'_Slope`h' * `cvar'
+				loc equation_d `equation_d' + `target'Slope`h' * `cvar'
 			}
 		}
 		else {
