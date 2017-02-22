@@ -16,13 +16,26 @@ program define ms_fvstrip, rclass
 	syntax [anything] [if] , [ dropomit expand onebyone NOIsily addbn]
 	if "`expand'"~="" {							//  force call to fvexpand
 		if "`onebyone'"=="" {
-			fvexpand `anything' `if'				//  single call to fvexpand
-			local anything `r(varlist)'
+			// fvexpand is *VERY* slow as it does a -tabulate- internally; avoid it if possible
+			if (strpos("`anything'", ".")) {
+				fvexpand `anything' `if'				//  single call to fvexpand
+				local anything `r(varlist)'
+			}
+			else {
+				unab anything : `anything'
+			}
 		}
 		else {
 			foreach vn of local anything {
-				fvexpand `vn' `if'				//  call fvexpand on items one-by-one
-				local newlist	`newlist' `r(varlist)'
+
+				if (strpos("`vn'", ".")) {
+					fvexpand `vn' `if' //  call fvexpand on items one-by-one
+					local newlist `newlist' `r(varlist)'
+				}
+				else {
+					unab vn : `vn'
+					local newlist `newlist' `vn'
+				}
 			}
 			local anything	: list clean newlist
 		}
