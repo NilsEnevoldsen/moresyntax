@@ -17,7 +17,7 @@ program define ms_fvstrip, rclass
 	if "`expand'"~="" {							//  force call to fvexpand
 		if "`onebyone'"=="" {
 			// fvexpand is *VERY* slow as it does a -tabulate- internally; avoid it if possible
-			if (strpos("`anything'", ".")) {
+			if (strpos("`anything'", ".") | strpos("`anything'", "#")) {
 				fvexpand `anything' `if'				//  single call to fvexpand
 				local anything `r(varlist)'
 			}
@@ -28,7 +28,7 @@ program define ms_fvstrip, rclass
 		else {
 			foreach vn of local anything {
 
-				if (strpos("`vn'", ".")) {
+				if (strpos("`vn'", ".") | strpos("`vn'", "#")) {
 					fvexpand `vn' `if' //  call fvexpand on items one-by-one
 					local newlist `newlist' `r(varlist)'
 				}
